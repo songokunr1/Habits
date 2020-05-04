@@ -50,8 +50,6 @@ class Habit(db.Model):
     def __repr__(self):
         return f"User('{self.name}', '{self.date_start}')"
 
-    def everycolumn(self, col):
-        return
 
 
 class Date(db.Model):
