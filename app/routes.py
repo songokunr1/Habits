@@ -1,7 +1,7 @@
 from app.models import Category, Habit, Date, Database
 from flask import render_template, url_for, flash, redirect, request
 from app import app, db
-from app.forms import New_category, New_habit
+from app.forms import New_category, New_habit, Building_habit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, date
 
@@ -27,7 +27,8 @@ posts = [
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', posts=posts)
+    form = Building_habit()
+    return render_template('home.html', form=form)
 
 
 @app.route("/about")
@@ -77,6 +78,14 @@ def category():
 def show_cat():
     cat=Category.query.all()
     return render_template('showcat.html', cat=cat)
+
+@app.route("/myhabit/<habits>")
+def myhabit(habits):
+    incategory = Category.query.filter_by(category=habits).first()
+    myhabits = Habit.query.filter_by(category_id=incategory.id).all()
+    print(myhabits)
+    #TODO lista nawyków dla danej kategori
+    return render_template('myhabit.html', myhabits=myhabits, category=habits)
 
 @app.route("/new_habit", methods= ['POST', 'GET'])
 def new_habit():
