@@ -1,10 +1,10 @@
-
 {% extends "layout.html" %}
 {% block content %}
 <form method="POST" action="">
     <fieldset>
         <div class="form-group">
             category{{form.category(class="form-control")}}
+
             {{ form.hidden_tag()}}
         </div>
         <div class="forms errors">
