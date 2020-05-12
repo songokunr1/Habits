@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(20), unique=True, nullable=False)
@@ -8,6 +9,7 @@ class Category(db.Model):
 
     def __init__(self, category):
         self.category = category
+
     #
     # def __repr__(self):
     #     return self.id, self.category
@@ -42,6 +44,7 @@ class Habit(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     date_start = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_end = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    # done = db.Column(db.Boolean, default=False)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
@@ -49,7 +52,6 @@ class Habit(db.Model):
 
     def __repr__(self):
         return f"User('{self.name}', '{self.date_start}')"
-
 
 
 class Date(db.Model):
