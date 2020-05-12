@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div>
+    myhabits: {{category}}
+    {% for habit in myhabits %}
+    <div> {{loop.index}}. {{habit.name}} <div>
+    {% endfor %}
+</div>
+{% endblock content %}
