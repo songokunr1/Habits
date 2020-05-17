@@ -4,10 +4,11 @@ from app import app, db
 from app.forms import New_category, New_habit, Building_habit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, date
+from flask_restful import Api
 
 
-from app.resources import Category_resources
 
+from app.resources import CategoryResource
 posts = [
     {
         'author': 'Corey Schafer',
@@ -22,23 +23,38 @@ posts = [
         'date_posted': 'April 21, 2018'
     }
 ]
+api = Api(app)
+
+api.add_resource(CategoryResource, '/category1/<string:name>')
 
 
 @app.route("/")
 @app.route("/home")
 def home():
     form = Building_habit()
-    return render_template('home.html', form=form)
+    habits = Date.query.filter_by(date='2020-05-10').all()
+    habit_list = []
+    for habit in habits:
+        habit_list.append(Habit.query.filter_by(id=habit.id).first().name)
+    print(habit_list)
+    return render_template('home.html', form=form, habits=habit_list)
 
 
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
 
+@app.route("/vue")
+def vue():
+    return render_template('vue.html', title='About')
+
+
 @app.route("/category", methods= ['POST', 'GET'])
 def category():
     form = New_category()
-
+    cat = Category.query.all()
+    date = Date.find_date_by_habit_id_and_date(_id=12, date='2020-05-11')
+    print(date.json(), 'nawyk one')
     print(form)
     print(request.method)
     for i in range(Category.query.count()):
@@ -63,7 +79,6 @@ def category():
     form.submit()
     print(form.validate_on_submit())
     #print(SQLAlchemy.execute("SELECT * FROM category"))
-    print(Category_resources.list_of_category(), 'resources model')
     if form.validate_on_submit():
         print('under POST')
         cat = Category(category=form.category.data)
@@ -83,9 +98,13 @@ def show_cat():
 def myhabit(habits):
     incategory = Category.query.filter_by(category=habits).first()
     myhabits = Habit.query.filter_by(category_id=incategory.id).all()
-    print(myhabits)
     #TODO lista nawyków dla danej kategori
     return render_template('myhabit.html', myhabits=myhabits, category=habits)
+
+@app.route("/index")
+def index():
+    #TODO lista nawyków dla danej kategori
+    return render_template('index.html')
 
 @app.route("/new_habit", methods= ['POST', 'GET'])
 def new_habit():
