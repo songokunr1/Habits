@@ -1,5 +1,7 @@
 from app import db
 from datetime import datetime
+from sqlalchemy.orm import relationship, backref
+
 
 
 class Category(db.Model):
@@ -17,6 +19,9 @@ class Category(db.Model):
     def __getitem__(self, index):
         return self.category
 
+
+    def json(self):
+        return {'name': self.category}
     # __getitem__
     # __setitem__
     # __delitem__
@@ -32,11 +37,8 @@ class Category(db.Model):
 
     @classmethod
     def list_of_ids(cls):
-        return cls.id.all()
+        return cls.query.all()
 
-    @classmethod
-    def list_of_ids2(cls, _id):
-        return cls.query.filter_by(id=_id)
 
 
 class Habit(db.Model):
@@ -44,26 +46,69 @@ class Habit(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     date_start = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_end = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    # done = db.Column(db.Boolean, default=False)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
-
-    dates = db.relationship('Date', lazy='dynamic')
 
     def __repr__(self):
         return f"User('{self.name}', '{self.date_start}')"
 
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def find_by_category_id(cls, category):
+        return cls.query.filter_by(category=category).all()
+
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Date(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(100), nullable=False, default=datetime.utcnow)
-    # db.relationship('Date', lazy='dynamic')
-
+ #   done = db.Column(db.Boolean, default=False)
     habit_id = db.Column(db.Integer, db.ForeignKey('habit.id')
                          , nullable=False)
+    habit = db.relationship('Habit',
+                                primaryjoin='Habit.id == Date.habit_id',
+                                backref=backref('Habit.name', lazy='joined'))
 
     def __repr__(self):
-        return f"Post('{self.date}', '{self.habit_id}')"
+        return f"Date('{self.date}', '{self.habit}')"
+
+    def json(self):
+        #TODO add self.done
+        return {'name': self.date, 'price': self.habit.name}
+
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_dates_by_habit_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_date_by_habit_id_and_date(cls, _id, date):
+        return cls.query.filter_by(id=_id, date=date).first()
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
 class Database:
