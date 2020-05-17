@@ -29,3 +29,5 @@ class New_habit(FlaskForm):
 class Building_habit(FlaskForm):
     box = BooleanField('Done')
     submit = SubmitField()
+
+
