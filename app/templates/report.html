@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<form method="POST" action="">
+    <fieldset>
+        <div class="form-group">
+            {{ form.hidden_tag()}}
+            {{form.selected_date(class="form-control")}}
+        </div>
+        <div class="forms errors">
+            {{form.errors}}
+        </div>
+    </fieldset>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+</form>
+
+{% for items in all_date_objects%}
+<div class="container"><h2>Nawyki</h2>
+
+
+    {% for item in items%}
+    <div class="panel-group">
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                nawyki do wykonania dnia: {{items[0].date}}
+            </div>
+            <div class="panel-body">
+                {{item.habit.name}}
+
+            </div>
+        </div>
+    </div>
+
+
+    {% endfor %}
+
+</div>
+{% endfor %}
+
+{% endblock content %}
