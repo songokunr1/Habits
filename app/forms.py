@@ -16,7 +16,7 @@ class New_category(FlaskForm):
 
 
 class New_habit(FlaskForm):
-    category_list = Category_resources.list_of_category()
+    category_list = Category.list_of_category()
     choice = [(Category.query.filter_by(
         category=category_name).first().id, category_name) for category_name in category_list]
 
@@ -30,4 +30,13 @@ class Building_habit(FlaskForm):
     box = BooleanField('Done')
     submit = SubmitField()
 
+class Delete_habit(FlaskForm):
+    category_list = Category.list_of_category()
+    choice = [(Category.query.filter_by(
+        category=category_name).first().id, category_name) for category_name in category_list]
+    category_type = SelectField('Type', coerce=int, validators=[DataRequired()], choices=choice)
+    submit_delete = SubmitField()
 
+class DateHabitReport(FlaskForm):
+    selected_date = DateField('start_date', format='%Y-%m-%d')
+    submit = SubmitField()
