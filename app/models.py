@@ -39,7 +39,18 @@ class Category(db.Model):
     def list_of_ids(cls):
         return cls.query.all()
 
+    @classmethod
+    def list_of_category(cls):
+        return [single_category.category for single_category in cls.query.all()]
 
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Habit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,8 +72,8 @@ class Habit(db.Model):
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def find_by_category_id(cls, category):
-        return cls.query.filter_by(category=category).all()
+    def find_by_category_id(cls, _category_id):
+        return cls.query.filter_by(category_id=_category_id).all()
 
 
     def save_to_db(self):
@@ -82,7 +93,7 @@ class Date(db.Model):
     habit = db.relationship('Habit',
                                 primaryjoin='Habit.id == Date.habit_id',
                                 backref=backref('Habit.name', lazy='joined'))
-
+# habit jest obiektem modelu Habit!
     def __repr__(self):
         return f"Date('{self.date}', '{self.habit}')"
 
@@ -97,6 +108,10 @@ class Date(db.Model):
     @classmethod
     def find_dates_by_habit_id(cls, _id):
         return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_habits_by_date(cls, _date):
+        return cls.query.filter_by(date=_date).all()
 
     @classmethod
     def find_date_by_habit_id_and_date(cls, _id, date):
