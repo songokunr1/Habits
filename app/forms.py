@@ -19,12 +19,16 @@ class New_habit(FlaskForm):
     category_list = Category.list_of_category()
     choice = [(Category.query.filter_by(
         category=category_name).first().id, category_name) for category_name in category_list]
-
+    priority_list = ['High', 'Medium', 'Low']
+    priority_choices = [(prio,prio) for prio in priority_list]
     name = TextAreaField('Name', validators=[DataRequired()])
     category_type = SelectField('Type', coerce=int, validators=[DataRequired()], choices=choice)
     start_date = DateField('start_date', format='%Y-%m-%d', validators=[DateRange(min=date.today())])
     end_date = DateField('end_date', format='%Y-%m-%d', validators=[DateRange(min=date.today())])
+    priority = SelectField('priority', choices=(priority_choices))
+
     submit = SubmitField()
+
 
 class Building_habit(FlaskForm):
     box = BooleanField('Done')
