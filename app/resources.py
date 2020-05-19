@@ -2,13 +2,14 @@ from flask_restful import Resource, reqparse
 from app.models import Category
 from app import db
 from flask_restful import Resource
+from flask import render_template, make_response
 
 
 class CategoryResource(Resource):
     def get(self, name):
         category = Category.find_by_category(name)
         if category:
-            return category.json()
+            return make_response(render_template('home.html'), 200, category.json())
         return {'message': 'Store not found'}, 404
 
     def post(self, name):
