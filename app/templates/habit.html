@@ -5,7 +5,11 @@
         <div class="form-group">
             {{ form.hidden_tag()}}
             name {{form.name(class="form-control")}}
-            {{form.category_type(class="form-control")}}
+            {{form.category_type(class="form-control form-control-lg")}}
+            <div>
+                {{form.priority(class="form-control form-control-lg")}}
+            </div>
+            <div></div>
             {{form.start_date(class="form-control")}}
             {{form.end_date(class="form-control")}}
         </div>
