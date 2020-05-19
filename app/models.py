@@ -5,9 +5,12 @@ from sqlalchemy.orm import relationship, backref
 
 
 class Category(db.Model):
+    __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(20), unique=True, nullable=False)
     habits = db.relationship('Habit', lazy='dynamic')
+    dates =  db.relationship('Date', lazy='dynamic')
+
 
     def __init__(self, category):
         self.category = category
@@ -36,6 +39,10 @@ class Category(db.Model):
         return cls.query.filter_by(id=_id).first()
 
     @classmethod
+    def find_name_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first().category
+
+    @classmethod
     def list_of_ids(cls):
         return cls.query.all()
 
@@ -53,12 +60,14 @@ class Category(db.Model):
         db.session.commit()
 
 class Habit(db.Model):
+    __tablename__ = 'habit'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     date_start = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_end = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
+    priority = db.Column(db.String, nullable=False, default='High')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+
 
     def __repr__(self):
         return f"User('{self.name}', '{self.date_start}')"
@@ -70,6 +79,10 @@ class Habit(db.Model):
     @classmethod
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def find_name_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first().name
 
     @classmethod
     def find_by_category_id(cls, _category_id):
@@ -85,14 +98,20 @@ class Habit(db.Model):
         db.session.commit()
 
 class Date(db.Model):
+    __tablename__ = 'date'
+
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(100), nullable=False, default=datetime.utcnow)
- #   done = db.Column(db.Boolean, default=False)
+    done = db.Column(db.Boolean, default=False)
     habit_id = db.Column(db.Integer, db.ForeignKey('habit.id')
                          , nullable=False)
     habit = db.relationship('Habit',
                                 primaryjoin='Habit.id == Date.habit_id',
                                 backref=backref('Habit.name', lazy='joined'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id')
+                         , nullable=False)
+
+
 # habit jest obiektem modelu Habit!
     def __repr__(self):
         return f"Date('{self.date}', '{self.habit}')"
