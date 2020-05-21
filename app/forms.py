@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, SelectField, widgets
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, SelectField, widgets, FormField, FieldList, IntegerField
 from wtforms_components import DateRange
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from app.models import Category
@@ -31,8 +31,10 @@ class New_habit(FlaskForm):
 
 
 class Building_habit(FlaskForm):
-    box = BooleanField('Done')
-    submit = SubmitField()
+    box = BooleanField('Done or not!')
+    date_id = IntegerField('Name', validators=[DataRequired()])
+
+    submit_done_or_not = SubmitField()
 
 class Delete_habit(FlaskForm):
     category_list = Category.list_of_category()
@@ -44,3 +46,8 @@ class Delete_habit(FlaskForm):
 class DateHabitReport(FlaskForm):
     selected_date = DateField('start_date', format='%Y-%m-%d')
     submit = SubmitField()
+
+
+class ExpensesForm(FlaskForm):
+    """A collection of expense items."""
+    items = FieldList(FormField(Building_habit), min_entries=1)
