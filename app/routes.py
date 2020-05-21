@@ -8,6 +8,8 @@ from app import db
 from app.forms import New_category, New_habit, Building_habit, Delete_habit, DateHabitReport
 from app.models import Category, Habit, Date
 from app.resources import CategoryResource
+from sqlalchemy import update
+from flask_sqlalchemy import SQLAlchemy
 
 #todo change model to done/not done, category name in date
 
@@ -95,9 +97,20 @@ def report():
 @app.route("/report/<number_of_dates>/<choosen_date>", methods=['POST', 'GET', 'DELETE'])
 def report_with_date(number_of_dates, choosen_date):
     form = DateHabitReport()
+    form_done = Building_habit()
     all_date_objects = [Date.find_habits_by_date(single_list) for single_list in choosen_date.split(',')]
 
     print (all_date_objects)
+    form_done.submit_done_or_not()
+    if form_done.validate_on_submit():
+        date = Date.query.filter_by(id=form_done.date_id.data).first()
+        date.done = True
+        db.session.commit()
+        flash('Your DELETE has been created!', 'success')
+        return render_template('report.html',
+                               form=form, number_of_dates=number_of_dates, choosen_date=choosen_date,
+                               all_date_objects=all_date_objects, form_done=form_done)
+
     form.submit()
     if form.validate_on_submit():
         number_of_dates = 1 + int(number_of_dates)
@@ -106,7 +119,7 @@ def report_with_date(number_of_dates, choosen_date):
         flash('Your post has been created!', 'success')
         return redirect(url_for('report_with_date', number_of_dates=number_of_dates, choosen_date=choosen_dates))
     return render_template('report.html',
-                           form=form, number_of_dates=number_of_dates, choosen_date=choosen_date, all_date_objects=all_date_objects )
+                           form=form, number_of_dates=number_of_dates, choosen_date=choosen_date, all_date_objects=all_date_objects, form_done=form_done)
 
 
 @app.route("/showcat")
@@ -125,17 +138,25 @@ def myhabit(name):
 @app.route("/index")
 def index():
     # TODO lista nawyków dla danej kategori
+    a_user = Date.query.filter_by(id='1').first()
+    a_user.done = True
+    db.session.commit()
+    # Date.query.update().\
+    #         where(Date.id==1).\
+    #         values(done='true')
     return render_template('index.html')
 
 
 @app.route("/new_habit", methods=['POST', 'GET'])
 def new_habit():
+    db.session.modified = True
+
     form = New_habit()
     category_list = Category.list_of_category()
     form.submit()
     if form.validate_on_submit():
         new_record = Habit(name=form.name.data, category_id=form.category_type.data, date_start=form.start_date.data,
-                           date_end=form.end_date.data)
+                           priority=form.priority.data, date_end=form.end_date.data)
         Habit.save_to_db(new_record)
         new_habit_id = Habit.query.filter_by(name=form.name.data).first().id
         for single_date in daterange(form.start_date.data, form.end_date.data):
