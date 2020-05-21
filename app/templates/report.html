@@ -15,28 +15,70 @@
     </div>
 </form>
 
-{% for items in all_date_objects%}
-<div class="container"><h2>Nawyki</h2>
+<div class="row">
+    <div class="col-sm-2"></div>
 
+    <div class="col-sm-8">
 
-    {% for item in items%}
-    <div class="panel-group">
+        {% for objects_in_a_single_date in all_date_objects%}
+        <div class="card">
+            <div class="card bg-secondary mb-3">
+                <div class="container">
+                    <div class="text-danger font-italic display-3">
+                        nawyki z dnia: {{objects_in_a_single_date[0].date}}
+                    </div>
+                    <h2></h2>
+                    <div class="card bg-light mb-3" style="max-width: 55rem;">
 
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                nawyki do wykonania dnia: {{items[0].date}}
-            </div>
-            <div class="panel-body">
-                {{item.habit.name}}
+                        <div class="card-header">
+                        </div>
+                        <div class="card-body">
+                            <h3> {% for date_object in objects_in_a_single_date%}</h3>
 
+                            <div class="panel-group">
+
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Categoria: {{date_object.category.category}}
+
+                                    </div>
+                                    <h3 class="card-title">{{date_object.habit.name}}</h3>
+                                    <div class="panel-body">
+                                        {%if date_object.done%}
+                                        nawyk jest DONE
+                                        {% else %}
+                                        <div class="text-danger font-italic">
+                                            Nawyk jest do zrobienia
+                                            <form method="POST" action="">
+                                                <fieldset>
+                                                    <div class="form-group">
+                                                        {{form_done.box(class="form-control")}}
+                                                        {{form_done.date_id(value=date_object.id) }}
+                                                    </div>
+                                                    <div class="forms errors">
+                                                        {{form.errors}}
+                                                    </div>
+                                                </fieldset>
+                                                <div class="form-group">
+                                                    {{form_done.submit_done_or_not(class="form-control")}}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {% endif%}
+                                    </div>
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                            </h5>
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        {% endfor %}
     </div>
-
-
-    {% endfor %}
-
 </div>
-{% endfor %}
-
 {% endblock content %}
