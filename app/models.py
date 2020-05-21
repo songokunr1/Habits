@@ -110,6 +110,8 @@ class Date(db.Model):
                                 backref=backref('Habit.name', lazy='joined'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id')
                          , nullable=False)
+    category = db.relationship('Category',
+                                primaryjoin='Category.id == Date.category_id', lazy='joined')
 
 
 # habit jest obiektem modelu Habit!
