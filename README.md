@@ -30,4 +30,15 @@ addresses
 user_projects
 - user_id (foreign key to users.id)
 - project_id (foreign key to projects.id)
-- role
+- role (foreign key to roles.id)
+
+project_roles
+- id (primary key)
+- project_id (foreign key to projects.id)
+- user_id (foreign key to users.id)
+- role_name 
+
+roles
+
+
+roles: Admin, free-user, premium-user, 
