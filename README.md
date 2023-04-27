@@ -38,7 +38,6 @@ project_roles
 - user_id (foreign key to users.id)
 - role_name 
 
-roles
 
 
 roles: Admin, free-user, premium-user, 
